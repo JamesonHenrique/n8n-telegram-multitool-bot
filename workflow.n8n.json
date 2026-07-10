@@ -1,0 +1,2030 @@
+{
+  "name": "UseCases Completo",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        0
+      ],
+      "id": "f65e855c-1093-43f3-a1c3-6c8d5d6faa54",
+      "webhookId": "76b3fd05-137c-4dce-a526-e51d70f1d96d",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/botSEU_TOKEN_TELEGRAM_AQUI/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=file_id",
+              "value": "={{$node[\"Extrair dados - /docimagem\"].json[\"photoId\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1696,
+        -176
+      ],
+      "id": "66095912-5077-4b6d-8806-969d5494f517",
+      "name": "Obter Info da Imagem"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/botSEU_TOKEN_TELEGRAM_AQUI/{{$node[\"Obter Info da Imagem\"].json[\"result\"][\"file_path\"]}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        -176
+      ],
+      "id": "f6e0eda5-41d4-437f-b25f-6d254b2beb1c",
+      "name": "Download Imagem"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://script.googleapis.com/v1/scripts/AKfycbxX1d-ViAIoG_pl58DpgIMsK0pWICnVOCogspC-nBk8ba4rTYooCB7Yxs4dy10P0bjl:run",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"function\": \"insertImageIntoDoc\",\n  \"parameters\": [\n    \"{{$node['Copiar Template - /docimagem'].json['id']}}\",\n    \"{{$node['Carregar Imagem - /docimagem'].json['id']}}\",\n    \"###IMAGEM_A_INSERIR###\"\n  ]\n}",
+        "options": {}
+      },
+      "name": "Inserir Imagem via Script",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2224,
+        -176
+      ],
+      "id": "b8ae0d9e-8775-4e44-a225-2a30fc7eaf55",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8WOF3SufL6gFyXE3",
+          "name": "Google Sheets account"
+        },
+        "googleDocsOAuth2Api": {
+          "id": "uXIRImXHbOkEZCcw",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/botSEU_TOKEN_TELEGRAM_AQUI/{{ $node[\"Obter Informações do Arquivo\"].json[\"result\"][\"file_path\"] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "name": "Download Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        352
+      ],
+      "id": "2c08fb70-d17a-4046-bcab-105eec2ede67"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.gladia.io/v2/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-gladia-key",
+              "value": "SUA_CHAVE_GLADIA_AQUI"
+            },
+            {}
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio",
+              "inputDataFieldName": "=data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Enviar Para o Gladia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1168,
+        352
+      ],
+      "id": "38d384b9-75b0-404b-bb84-812aeaa87e5e"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result_url}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-gladia-key",
+              "value": "SUA_CHAVE_GLADIA_AQUI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Obter Resultado da Transcrição",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        352
+      ],
+      "id": "e9f59195-fabc-4b49-a12c-190a315af7ac"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Checar Se Foi Concluido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        432
+      ],
+      "id": "63c72b55-42e5-4485-970e-e3f1a378a29b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.all()[0].json;\n\nlet transcript = 'Não foi possível transcrever o áudio.';\n\nif (response.result && response.result.transcription) {\n  transcript = response.result.transcription.full_transcript || \n               (response.result.transcription.utterances && \n                response.result.transcription.utterances.map(u => u.text).join(' ')) ||\n               'Transcrição vazia';\n}\n\nreturn {\n  chat_id: $('Telegram Trigger').item.json.message.chat.id,\n  transcript: transcript,\n  original_response: response \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        272
+      ],
+      "id": "0c594625-dfea-4be6-b0ce-a95e9a5c436a",
+      "name": "Extrair Texto da Transcrição"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=*🔊 Transcrição de Áudio Concluída*\n\n{{ $json.transcript }}",
+        "additionalFields": {}
+      },
+      "name": "Enviar Transcrição",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2400,
+        272
+      ],
+      "id": "2603a8fd-97ae-49b7-b585-9e976fa962d7",
+      "webhookId": "ea307843-63c0-47fe-9d79-d805f506227b",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://g1.globo.com/",
+        "options": {}
+      },
+      "id": "b74ac1d0-a21b-4e24-b45a-6332eb1dc7da",
+      "name": "Buscar G1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8b34e319-5a31-4db3-b1a3-295b7b376cff",
+              "leftValue": "={{$json[\"shouldProcess\"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        176
+      ],
+      "id": "bc75acc7-e836-4aa3-8550-db06723425ef",
+      "name": "Verificar ShouldProcess"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "=👋 Olá! Eu sou o B2BitBOT — aqui está o que posso fazer por você:\n\n**Comandos disponíveis:**\n• 📄 `/docimagem <texto>` – Gera um PDF **com texto e com sua imagem anexada**.  \n• ✍️ `/criardocumento <texto>` – Gera um PDF **somente com texto**.  \n• 📰 `/noticiasg1` – Envia as últimas notícias do **G1**.\n\n🗣️ Se você me enviar um áudio, **vou transcrever automaticamente** para texto e responder aqui no chat.\n\n",
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem - /start",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -352
+      ],
+      "id": "753b979d-0e9a-4967-977a-742c8e76c416",
+      "webhookId": "f8871438-ef4f-4380-9d96-1657635964dc",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Extrair dados - /criardocumento\"].json[\"chatId\"]}}",
+        "text": "=✅ Pronto! O seu documento foi criado com sucesso 🎉  \n👤 {{ $node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"] }} ({{ $node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"] }})  \n📅 Enviado em: {{ $now.format('DD H:mm') }}\n",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=📄 Abrir PDF",
+                    "additionalFields": {
+                      "url": "={{$node[\"Combinar Links  - /criardocumento\"].json[\"pdfLink\"]}}"
+                    }
+                  },
+                  {
+                    "text": "📁 Baixar PDF",
+                    "additionalFields": {
+                      "url": "={{$node[\"Combinar Links  - /criardocumento\"].json[\"pdfDownloadLink\"]}}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem - /criardocumento",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        0
+      ],
+      "id": "d6625c0f-63bf-4b3c-bb20-3e5a8f7786cd",
+      "webhookId": "a7059bca-0052-4e35-b413-5eacf015c36e",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{($node[\"Extrair Notícias\"].json[\"error\"] ? $node[\"Extrair Notícias\"].json[\"chatId\"] : $node[\"Verificar Comando\"].json[\"chatId\"])}}",
+        "text": "=📰 *Últimas Notícias do G1* \n\n{{ $json.noticias.map((noticia, index) => `${index + 1}. [${noticia.titulo}](${noticia.link})`).join('\\n\\n') }}\n\n_Atualizado agora_",
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem - /noticiasg1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        176
+      ],
+      "id": "fee6e9f6-1d6a-4602-b01d-393d9c01a997",
+      "webhookId": "203f6e10-ba83-43a7-9b48-c310d63a0e31",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "try {\n  const message = $node[\"Telegram Trigger\"].json.message;\n  \n  if (!message || !message.chat || !message.from) {\n    throw new Error(\"Estrutura da mensagem do Telegram inválida\");\n  }\n  \n  if (!message.chat.id) {\n    throw new Error(\"ID do chat não encontrado na mensagem\");\n  }\n  \n  if (!message.from.id) {\n    throw new Error(\"ID do usuário não encontrado na mensagem\");\n  }\n  \n  let text = '';\n  if (message.text) {\n    text = message.text.replace('/docimagem', '').trim();\n  } else if (message.caption) {\n    text = message.caption.replace('/docimagem', '').trim();\n  } else {\n    throw new Error(\"Nenhum texto ou legenda encontrado na mensagem\");\n  }\n  \n  if (text.length === 0) {\n    throw new Error(\"O texto para inserir no documento está vazio. Por favor, envie algum texto após o comando /docimagem\");\n  }\n  \n  if (text.length > 5000) {\n    throw new Error(\"Texto muito longo (máximo 5000 caracteres). Por favor, divida seu conteúdo em partes menores\");\n  }\n  \n  const problematicChars = /[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g;\n  if (problematicChars.test(text)) {\n    text = text.replace(problematicChars, '');\n  }\n  \n  let photoId = null;\n  if (message.photo && Array.isArray(message.photo) && message.photo.length > 0) {\n    const photo = message.photo[message.photo.length - 1];\n    if (photo && photo.file_id) {\n      photoId = photo.file_id;\n    }\n  }\n  \n  if (!photoId) {\n    throw new Error(\"Nenhuma imagem encontrada na mensagem. Por favor, envie uma imagem com o comando /docimagem\");\n  }\n  \n  if (typeof photoId !== 'string' || photoId.trim() === '') {\n    throw new Error(\"ID da foto inválido obtido do Telegram\");\n  }\n  \n  const photo = message.photo[message.photo.length - 1];\n  if (photo.file_size && photo.file_size > 20 * 1024 * 1024) { // 20MB\n    throw new Error(\"Imagem muito grande (máximo 20MB). Por favor, envie uma imagem menor\");\n  }\n  \n  return {\n    chatId: message.chat.id,\n    userId: message.from.id,\n    textToInject: text,\n    photoId: photoId,\n    success: true,\n    userName: message.from.first_name || 'Usuário',\n    userUsername: message.from.username || 'sem_username'\n  };\n  \n} catch (error) {\n  console.error('Erro na extração de dados /docimagem:', error);\n  \n  let fallbackChatId = null;\n  try {\n    const message = $node[\"Telegram Trigger\"].json.message;\n    if (message && message.chat && message.chat.id) {\n      fallbackChatId = message.chat.id;\n    }\n  } catch (fallbackError) {\n    console.error('Erro ao obter chat ID de fallback:', fallbackError);\n  }\n  \n  return {\n    chatId: fallbackChatId,\n    error: true,\n    errorMessage: error.message,\n    success: false\n  };\n}"
+      },
+      "name": "Extrair dados - /docimagem",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -176
+      ],
+      "id": "895b401b-5144-4ac5-9465-a06402873c09"
+    },
+    {
+      "parameters": {
+        "functionCode": "try {\n  const message = $node[\"Telegram Trigger\"].json.message;\n  \n  if (!message) {\n    throw new Error(\"Mensagem do Telegram não recebida ou formato inválido\");\n  }\n  \n  if (!message.chat || !message.chat.id) {\n    throw new Error(\"ID do chat não encontrado na mensagem\");\n  }\n  \n  if (!message.from || !message.from.id) {\n    throw new Error(\"ID do usuário não encontrado na mensagem\");\n  }\n  \n  if (!message.text) {\n    throw new Error(\"Por favor, envie o comando no formato: /criardocumento [seu texto aqui]\");\n  }\n  \n  let text = message.text.replace('/criardocumento', '').trim();\n  \n  if (text.length === 0) {\n    throw new Error(\"O texto não pode estar vazio. Por favor, envie no formato:\\n/criardocumento [seu texto aqui]\");\n  }\n  \n  if (text.length > 2000) {\n    throw new Error(\"Texto muito longo (máximo 2000 caracteres). Por favor, divida seu conteúdo em partes menores\");\n  }\n  \n  const invalidChars = /[<>{}[\\]]/g;\n  if (invalidChars.test(text)) {\n    throw new Error(\"O texto contém caracteres inválidos (<, >, {, }, [, ]). Por favor, remova-os\");\n  }\n  \n  const controlChars = /[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g;\n  if (controlChars.test(text)) {\n    text = text.replace(controlChars, '');\n  }\n  \n  if (text.replace(/[\\s\\n\\r\\t]/g, '').length === 0) {\n    throw new Error(\"O texto não pode conter apenas espaços em branco. Por favor, adicione conteúdo válido\");\n  }\n  \n  return {\n    chatId: message.chat.id,\n    userId: message.from.id,\n    textToInject: text,\n    success: true,\n    userName: message.from.first_name || 'Usuário',\n    userUsername: message.from.username || 'sem_username'\n  };\n  \n} catch (error) {\n  console.error('Erro na extração de dados /criardocumento:', error);\n  \n  let fallbackChatId = null;\n  try {\n    const message = $node[\"Telegram Trigger\"].json.message;\n    if (message && message.chat && message.chat.id) {\n      fallbackChatId = message.chat.id;\n    }\n  } catch (fallbackError) {\n    console.error('Erro ao obter chat ID de fallback:', fallbackError);\n  }\n  \n  return {\n    chatId: fallbackChatId,\n    error: true,\n    errorMessage: error.message,\n    success: false\n  };\n}"
+      },
+      "name": "Extrair dados - /criardocumento",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "66897d50-7325-4f48-8789-22c02856f9f1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "list",
+        "useQueryString": true,
+        "queryString": "name='Modelo Timbrado Base'",
+        "options": {}
+      },
+      "name": "Encontrar Template - Modelo Timbrado Base",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "dec07127-b48b-48a3-8a3d-c7d2f54583c5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "list",
+        "useQueryString": true,
+        "queryString": "name='Modelo Marcadores'",
+        "options": {}
+      },
+      "name": "Encontrar Template - Modelo Marcadores",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -176
+      ],
+      "id": "c29e6c1e-cc23-405e-8ad5-f6535fcd1dbe",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Retornar dados - Modelo Timbrado Base\"].json[\"templateId\"]}}",
+          "mode": "id"
+        },
+        "options": {
+          "name": "=Documento para : **@{{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"]}}** ({{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"]}})   - {{$now.format('DD HH:mm')}}"
+        }
+      },
+      "name": "Copiar Template - /criardocumento",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        0
+      ],
+      "id": "a0eccdbd-8f7c-4959-9977-b3d24b22a25b",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Retornar dados - Modelo Marcadores\"].json[\"templateId\"]}}",
+          "mode": "id"
+        },
+        "options": {
+          "name": "=Documento para : **@{{$node[\"Extrair dados - /docimagem\"].json[\"username\"]}}** ({{ $node[\"Extrair dados - /docimagem\"].json[\"first_name\"] }})   - {{$now.format('DD HH:mm')}}"
+        }
+      },
+      "name": "Copiar Template - /docimagem",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        -176
+      ],
+      "id": "7d5f841c-22ef-4601-ad13-0f4d9cb1c0c3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  templateId: $node[\"Encontrar Template - Modelo Timbrado Base\"].json[\"id\"],\n  userId: $node[\"Extrair dados - /criardocumento\"].json[\"userId\"]\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "64011899-72fa-498c-88b3-44745012f26f",
+      "name": "Retornar dados - Modelo Timbrado Base"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  templateId: $node[\"Encontrar Template - Modelo Marcadores\"].json[\"id\"],\n  userId: $node[\"Extrair dados - /docimagem\"].json[\"userId\"]\n};"
+      },
+      "name": "Retornar dados - Modelo Marcadores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        -176
+      ],
+      "id": "afb7f6f9-0357-4531-af48-56cc06e53c2d"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "binaryData": "={{$node[\"Download Imagem\"].binary[\"data\"]}}",
+        "name": "=doc_image_{{$node['Extrair dados - /docimagem'].json['userId']}}_{{$now.format('DD')}}.jpg",
+        "resolveData": true,
+        "options": {}
+      },
+      "name": "Carregar Imagem - /docimagem",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        -176
+      ],
+      "id": "91bdef8f-9dce-44d8-b67c-d48fa898eadb",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const html = $input.first().json.data;\nconst noticias = [];\n\n// Função para extrair links e títulos usando regex\nfunction extrairNoticias(html, selectores) {\n  const resultados = [];\n  \n  for (const seletor of selectores) {\n    // Padrão regex para encontrar elementos <a> com a classe especificada\n    const regex = new RegExp(`<a[^>]*class=[\"'][^\"']*${seletor}[^\"']*[\"'][^>]*href=[\"']([^\"']+)[\"'][^>]*>([\\\\s\\\\S]*?)<\\\\/a>`, 'gi');\n    let match;\n    \n    while ((match = regex.exec(html)) !== null && resultados.length < 10) {\n      const link = match[1].trim();\n      let titulo = match[2].replace(/<[^>]+>/g, '').trim(); // Remove tags HTML dentro do título\n      \n      if (titulo && link && titulo.length > 10) {\n        let fullLink = link;\n        if (link.startsWith('/')) {\n          fullLink = 'https://g1.globo.com' + link;\n        }\n        \n        resultados.push({\n          titulo: titulo,\n          link: fullLink\n        });\n      }\n    }\n    \n    if (resultados.length >= 10) break;\n  }\n  \n  return resultados;\n}\n\n// Primeira tentativa com seletores principais\nnoticias.push(...extrairNoticias(html, [\n  'feed-post-link',\n  'bastian-feed-item',\n  'bstn-fd-relatedLink'\n]));\n\n// Segunda tentativa com seletores alternativos se não encontrou nada\nif (noticias.length === 0) {\n  noticias.push(...extrairNoticias(html, [\n    'feed-post-body-title',\n    'content-head__title'\n  ]));\n}\n\nreturn [{ json: { noticias: noticias.slice(0, 10) } }];"
+      },
+      "name": "Extrair Notícias",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        176
+      ],
+      "id": "c948e5ce-2de1-4156-9317-a4b149dba6df"
+    },
+    {
+      "parameters": {
+        "functionCode": "const message = $input.all()[0].json.message;\n\nif (message.text === '/noticiasg1') {\n  return [{\n    shouldProcess: true,\n    chatId: message.chat.id\n  }];\n}\nreturn [{\n  shouldProcess: false,\n  chatId: message.chat.id\n}];"
+      },
+      "name": "Verificar Comando",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        640,
+        176
+      ],
+      "id": "4069ff08-1c21-49b7-8932-04d09e9912ea"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "update",
+        "documentURL": "={{$node[\"Copiar Template - /docimagem\"].json[\"id\"]}}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "=###TEXTO_A_INSERIR###",
+              "replaceText": "={{$node[\"Extrair dados - /docimagem\"].json[\"textToInject\"]}}",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "name": "Inserir Texto - /docimagem",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -176
+      ],
+      "id": "070dfa90-09a2-4970-92fa-79ef4224e675",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "uXIRImXHbOkEZCcw",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "update",
+        "documentURL": "={{$node[\"Copiar Template - /criardocumento\"].json[\"id\"]}}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "=###TEXTO_A_INSERIR###",
+              "replaceText": "={{$node[\"Extrair dados - /criardocumento\"].json[\"textToInject\"]}}",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "name": "Inserir Texto - /criardocumento",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        0
+      ],
+      "id": "58127b68-1878-4c20-b7bf-dda801534d8a",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "uXIRImXHbOkEZCcw",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.gladia.io/v2/pre-recorded",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-gladia-key",
+              "value": "SUA_CHAVE_GLADIA_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $json.audio_url }}\",\n  \"diarization\": false,\n  \"detect_language\": true\n}",
+        "options": {}
+      },
+      "name": "Iniciar Transcrição",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        352
+      ],
+      "id": "96fc5994-827e-4094-bd2a-a62bbb4872d8"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "name": "Esperar Mais 15 Segundos",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        352
+      ],
+      "id": "4b367ba6-ee54-4e1a-a114-e8b512a2c4c7",
+      "webhookId": "0d3e4d3b-9c47-41d5-bbbf-7914dedbce23"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "name": "Esperar 1 Segundo",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        352
+      ],
+      "id": "d57407b4-9615-4b8b-834d-09c422503f8d",
+      "webhookId": "0d3e4d3b-9c47-41d5-bbbf-7914dedbce23"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Copiar Template - /docimagem\"].json[\"id\"]}}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "=Documento para : **@{{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"]}}** ({{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"]}})   - {{$now.format('DD HH:mm')}}.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2400,
+        -176
+      ],
+      "id": "aafa7cac-f5f2-413f-8ee6-5f4a30ad198e",
+      "name": "Download PDF - /docimagem",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "= https://www.googleapis.com/drive/v3/files/{{$json[\"id\"]}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Documento de : @{{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"]}} ({{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"]}})   - {{$now.format('DD HH:mm')}}.pdf\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        -176
+      ],
+      "id": "b7a192b8-6c7a-4780-a5de-b80a86f1650a",
+      "name": "Alterar Nome do PDF - /docimagem",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Enviar PDF - /docimagem\"].json[\"id\"]}}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2928,
+        -176
+      ],
+      "id": "6a987470-b96f-43d6-8bac-ee43edf8aa1b",
+      "name": "Compratilhar PDF - /docimagem",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  chatId: $node['Extrair dados - /docimagem'].json['chatId'],\n  docLink: `https://docs.google.com/document/d/${$node['Copiar Template - /docimagem'].json['id']}/edit`,\n  pdfLink: `https://drive.google.com/file/d/${$node['Enviar PDF - /docimagem'].json['id']}/view`,\n  pdfDownloadLink: `https://drive.google.com/uc?export=download&id=${$node['Enviar PDF - /docimagem'].json['id']}`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        -176
+      ],
+      "id": "10d3425a-234b-424e-b074-de8defc42e65",
+      "name": "Combinar Links  - /docimagem"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "= https://www.googleapis.com/drive/v3/files/{{$json[\"id\"]}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Documento de : @{{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"]}} ({{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"]}})   - {{$now.format('DD HH:mm')}}.pdf\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2224,
+        0
+      ],
+      "id": "cc8e8e75-b19d-4edf-8582-65216169e7b3",
+      "name": "Alterar Nome do PDF - /criardocumento",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/drive/v3/files?uploadType=media&convert=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        0
+      ],
+      "id": "33a54f7a-076f-4407-883e-eff97f70a3a2",
+      "name": "Enviar PDF - /criardocumento",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Copiar Template - /criardocumento\"].json[\"id\"]}}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "=Documento para : **@{{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"]}}** ({{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"]}})   - {{$now.format('DD HH:mm')}}.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        0
+      ],
+      "id": "78d8e350-6bf9-4d47-8b9f-7907ef2b39a9",
+      "name": "Download PDF - /criardocumento",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Enviar PDF - /criardocumento\"].json[\"id\"]}}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2400,
+        0
+      ],
+      "id": "a7496e72-922a-4f72-b03b-bdcc1f6d4a46",
+      "name": "Compratilhar PDF - /criardocumento",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  chatId: $node['Extrair dados - /criardocumento'].json['chatId'],\n  docLink: `https://docs.google.com/document/d/${$node['Copiar Template - /criardocumento'].json['id']}/edit`,\n  pdfLink: `https://drive.google.com/file/d/${$node['Enviar PDF - /criardocumento'].json['id']}/view`,\n  pdfDownloadLink: `https://drive.google.com/uc?export=download&id=${$node['Enviar PDF - /criardocumento'].json['id']}`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        0
+      ],
+      "id": "362db9e9-6362-43b2-a617-123b5b916aa1",
+      "name": "Combinar Links  - /criardocumento"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "done",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7f87ce7e-31c7-4966-8365-78b068a1ac15"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c5bf1a94-6d98-4841-b130-3c70a2f8cdd4",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "processing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2048,
+        352
+      ],
+      "id": "1ae7aea6-2c18-4f63-bd66-8f469ddff568",
+      "name": "Checar Status"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"text\"]}}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "20ee943d-e88d-4322-a642-a6474d15c4c6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "21f46356-fb55-415b-94ff-8f08bded0f48",
+                    "leftValue": "={{$node[\"Telegram Trigger\"].json.message?.text || $node[\"Telegram Trigger\"].json.message?.caption || \"\"}}",
+                    "rightValue": "/docimagem",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "13dbf82a-3192-4b29-9266-9cffd570365f",
+                    "leftValue": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"text\"]}}",
+                    "rightValue": "/criardocumento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "102a2715-9490-4ec4-8e20-785771387cc8",
+                    "leftValue": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"text\"]}}",
+                    "rightValue": "/noticiasg1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "45087a91-68b5-4302-963c-d789d0c59737",
+                    "leftValue": "={{ $json.message.voice ? $json.message.voice.file_id : $json.message.audio.file_id }}\n",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        -48
+      ],
+      "id": "7dc40eb2-c5f6-4153-a9de-0921bda2f79a",
+      "name": "Checar Comandos"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Extrair dados - /docimagem\"].json[\"chatId\"]}}",
+        "text": "=✅ Pronto! O seu documento foi criado com sucesso 🎉  \n👤 {{ $node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"first_name\"] }} ({{ $node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"username\"] }})  \n📅 Enviado em: {{ $now.format('DD H:mm') }}\n",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=📄 Abrir PDF",
+                    "additionalFields": {
+                      "url": "={{$node[\"Combinar Links  - /docimagem\"].json[\"pdfLink\"]}}"
+                    }
+                  },
+                  {
+                    "text": "📁 Baixar PDF",
+                    "additionalFields": {
+                      "url": "={{$node[\"Combinar Links  - /docimagem\"].json[\"pdfDownloadLink\"]}}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem - /docimagem",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        -176
+      ],
+      "id": "aad4186f-143c-4029-9d45-ce5e421716e5",
+      "webhookId": "a7059bca-0052-4e35-b413-5eacf015c36e",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Extrair dados - /criardocumento\"].json[\"chatId\"]}}",
+        "text": "=📄 Processando seu documento...\n\nEstamos criando seu arquivo com as informações recebidas. Isso pode levar alguns instantes.\nSe demorar muito, tente novamente ou verifique sua conexão.\n\n",
+        "additionalFields": {}
+      },
+      "name": "Enviar Texto Inicial - /criardocumento",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "37f6ed75-e41d-4e63-a41d-68e3837c9dcb",
+      "webhookId": "ea307843-63c0-47fe-9d79-d805f506227b",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Extrair dados - /docimagem\"].json[\"chatId\"]}}",
+        "text": "=📄 Processando seu documento...\n\nEstamos criando seu arquivo com as informações recebidas. Isso pode levar alguns instantes.\nSe demorar muito, tente novamente ou verifique sua conexão.\n\n",
+        "additionalFields": {}
+      },
+      "name": "Enviar Texto Inicial - /docimagem",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        -176
+      ],
+      "id": "4cec6e48-fa44-4e06-b48b-1390349bc0ee",
+      "webhookId": "ea307843-63c0-47fe-9d79-d805f506227b",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/drive/v3/files?uploadType=media&convert=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2576,
+        -176
+      ],
+      "id": "032d4cef-acf0-4e04-9a1b-20d8bfd9ede8",
+      "name": "Enviar PDF - /docimagem",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UCdsjDyk5xy8cpdt",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}",
+        "text": "=🔊 *Processando seu áudio...*\n\nEstamos transcrevendo o áudio. Por favor, aguarde alguns instantes. Se demorar muito, tente novamente ou verifique sua conexão.",
+        "additionalFields": {}
+      },
+      "name": "Enviar Texto Inicial - Audio",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        352
+      ],
+      "id": "5fb4f749-e3dd-499c-ab86-105940550458",
+      "webhookId": "ea307843-63c0-47fe-9d79-d805f506227b",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/botSEU_TOKEN_TELEGRAM_AQUI/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.message.voice ? $json.message.voice.file_id : $json.message.audio.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Obter Informações do Arquivo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        352
+      ],
+      "id": "0b46b001-e2d1-41cf-8d54-a821c260a522"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "name": "Esperar Mais de 15 Segundos",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2224,
+        432
+      ],
+      "id": "14c7d213-79a7-41f3-b56c-75e555bf808c",
+      "webhookId": "1d62d35e-7414-469e-bd27-11a607463138"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"from\"][\"id\"]}}",
+        "text": "=❌ Ocorreu um erro! Tente Novamente. ❌\n",
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem de Erro - Audio",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2576,
+        432
+      ],
+      "id": "b79899dc-d763-446c-b1ae-069edb3cf9dc",
+      "webhookId": "ea307843-63c0-47fe-9d79-d805f506227b",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId || $json.chat_id }}",
+        "text": "=❌ **Erro no processamento** ❌\n\n{{ $json.errorMessage || $json.error_message || 'Ocorreu um erro inesperado. Tente novamente em alguns instantes.' }}",
+        "additionalFields": {}
+      },
+      "name": "Enviar Mensagem de Erro - Docs",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        -352
+      ],
+      "id": "48d8cebb-01c9-49e3-ba05-ba17a777f8e3",
+      "webhookId": "7b4a7260-3557-45d3-b2d2-7e84c3752bb9",
+      "credentials": {
+        "telegramApi": {
+          "id": "LCK2Vg3Nk34pmooZ",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8543e29d-1171-4278-afdf-5c64c37cccec",
+              "leftValue": "={{ $node[\"Extrair dados - /criardocumento\"].json[\"success\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "3dc4bd31-bd33-43a4-8ebd-6beb55069da8",
+      "name": "Verificar dados - /criardocumento"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8543e29d-1171-4278-afdf-5c64c37cccec",
+              "leftValue": "={{ $node[\"Extrair dados - /docimagem\"].json[\"success\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        -176
+      ],
+      "id": "79db8950-c549-42d3-9137-807b1ed00bd3",
+      "name": "Verificar dados - /docimagem"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Checar Comandos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter Info da Imagem": {
+      "main": [
+        [
+          {
+            "node": "Download Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Imagem": {
+      "main": [
+        [
+          {
+            "node": "Carregar Imagem - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Imagem via Script": {
+      "main": [
+        [
+          {
+            "node": "Download PDF - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Enviar Para o Gladia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Para o Gladia": {
+      "main": [
+        [
+          {
+            "node": "Esperar 1 Segundo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter Resultado da Transcrição": {
+      "main": [
+        [
+          {
+            "node": "Checar Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checar Se Foi Concluido": {
+      "main": [
+        [
+          {
+            "node": "Obter Resultado da Transcrição",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Mensagem de Erro - Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Texto da Transcrição": {
+      "main": [
+        [
+          {
+            "node": "Enviar Transcrição",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar G1": {
+      "main": [
+        [
+          {
+            "node": "Extrair Notícias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar ShouldProcess": {
+      "main": [
+        [
+          {
+            "node": "Buscar G1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Extrair dados - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Verificar dados - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair dados - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Verificar dados - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrar Template - Modelo Timbrado Base": {
+      "main": [
+        [
+          {
+            "node": "Retornar dados - Modelo Timbrado Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrar Template - Modelo Marcadores": {
+      "main": [
+        [
+          {
+            "node": "Retornar dados - Modelo Marcadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copiar Template - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Inserir Texto - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copiar Template - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Inserir Texto - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retornar dados - Modelo Timbrado Base": {
+      "main": [
+        [
+          {
+            "node": "Copiar Template - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retornar dados - Modelo Marcadores": {
+      "main": [
+        [
+          {
+            "node": "Copiar Template - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Imagem - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Inserir Imagem via Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Notícias": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem - /noticiasg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Comando": {
+      "main": [
+        [
+          {
+            "node": "Verificar ShouldProcess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Texto - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Obter Info da Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Texto - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Download PDF - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iniciar Transcrição": {
+      "main": [
+        [
+          {
+            "node": "Esperar Mais 15 Segundos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Mais 15 Segundos": {
+      "main": [
+        [
+          {
+            "node": "Obter Resultado da Transcrição",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 1 Segundo": {
+      "main": [
+        [
+          {
+            "node": "Iniciar Transcrição",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Mensagem - /criardocumento": {
+      "main": [
+        []
+      ]
+    },
+    "Download PDF - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar PDF - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alterar Nome do PDF - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Compratilhar PDF - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compratilhar PDF - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Combinar Links  - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combinar Links  - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alterar Nome do PDF - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Compratilhar PDF - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar PDF - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Alterar Nome do PDF - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Enviar PDF - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compratilhar PDF - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Combinar Links  - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combinar Links  - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checar Status": {
+      "main": [
+        [
+          {
+            "node": "Extrair Texto da Transcrição",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esperar Mais de 15 Segundos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checar Comandos": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem - /start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair dados - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair dados - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verificar Comando",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obter Informações do Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Texto Inicial - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Encontrar Template - Modelo Timbrado Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Texto Inicial - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Encontrar Template - Modelo Marcadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar PDF - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Alterar Nome do PDF - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Texto Inicial - Audio": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter Informações do Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Enviar Texto Inicial - Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar Mais de 15 Segundos": {
+      "main": [
+        [
+          {
+            "node": "Checar Se Foi Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar dados - /criardocumento": {
+      "main": [
+        [
+          {
+            "node": "Enviar Texto Inicial - /criardocumento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Mensagem de Erro - Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar dados - /docimagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar Texto Inicial - /docimagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Mensagem de Erro - Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "u9Ai4VHNDIlvsTHX"
+  },
+  "versionId": "526286bd-32b3-42ea-973c-e42ccc86aa64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a302afa3c331cb9f70f3f864b865a5ca897cbd3da3a29b1d9da2979ac559bfda"
+  },
+  "id": "xSMgVrpqSVVkbrTq",
+  "tags": []
+}
