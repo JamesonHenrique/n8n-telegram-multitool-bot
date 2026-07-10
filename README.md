@@ -76,7 +76,7 @@ Checar Comandos (roteador)
 
 ```
 n8n-telegram-multitool-bot/
-├── workflow.n8n.json        # Export do workflow (sanitizado, sem credenciais)
+├── workflow.n8n.json        # Export do workflow 
 ├── docs/
 │   └── workflow-overview.png  # Print do canvas do n8n
 ├── README.md
