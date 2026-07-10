@@ -114,11 +114,8 @@ n8n-telegram-multitool-bot/
 
 ## 👤 Autor
 
-**Jameson Henrique**
-Desenvolvedor em formação, com foco em automação de processos e integrações low-code.
+- LinkedIn: _https://www.linkedin.com/in/jamesonhenrique_
 
-- LinkedIn: _adicione o link do seu perfil aqui_
-- GitHub: _adicione o link do seu perfil aqui_
 
 ---
 
